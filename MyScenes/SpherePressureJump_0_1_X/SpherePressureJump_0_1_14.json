@@ -1,0 +1,53 @@
+{
+	"Configuration": 
+	{
+		"numberOfStepsPerRenderUpdate": 2,
+
+		"timeStepSize": 0.00001,
+		"cflMethod": 0, 
+	
+		"particleRadius": 0.01,
+		"simulationMethod": 3,
+		
+		"gravitation": [0.0,0.0,0.0], 	
+
+		"particleAttributes": "position;density;velocity;pressure;mass",
+		"enableVTKExport" : true,
+		"enablePartioExport": true,
+		"dataExportFPS": 100.0,
+
+		"stopAt": 100.0
+	},
+	"Materials": [
+		{
+			"id": "inner",
+			"density0": 1.0,
+			"xsph": 0.0,
+
+			"colorField": "velocity",
+			"colorMapType": 1,
+			"renderMaxValue": 1.0,
+			"renderMinValue": 0.0,
+
+			"viscosityMethod": 0,
+			"vorticityMethod": 0,
+			"dragMethod": 0,
+			"elasticityMethod": 0,
+			
+			"surfaceTensionMethod": 4,
+			"surfaceTension": 10000.0,
+			"surfaceTensionViscosity": 40.0,
+			"surfaceTensionXSPH": 0.0
+		}
+	],
+	"FluidBlocks": [
+		{
+			"id": "inner",
+			"denseMode": 0,
+			"start": [0.0, 0.0, 0.0],
+			"end": [0.4, 0.4, 0.4],
+			"translation": [-0.2, -0.2, -0.2],
+			"scale": [1,1,1]
+		}
+	]	
+}

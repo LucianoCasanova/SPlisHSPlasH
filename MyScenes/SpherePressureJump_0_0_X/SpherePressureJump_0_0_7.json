@@ -1,0 +1,122 @@
+{
+	"Configuration": 
+	{
+		"numberOfStepsPerRenderUpdate": 2,
+
+		"timeStepSize": 0.00005,
+		"cflMethod": 0, 
+	
+		"particleRadius": 0.01,
+		"simulationMethod": 0,
+
+		"stiffness": 50000.0,
+		"exponent": 7.0,
+
+		"density0": 1.0, 
+		"gravitation": [0.0,0.0,0.0], 	
+
+		"particleAttributes": "position;density;velocity;pressure",
+		"enableVTKExport" : true,
+		"dataExportFPS": 100.0,
+
+		"stopAt": 10.0
+	},
+	"Materials": [
+		{
+			"id": "inner",
+			"density0": 1000.0,
+			"xsph": 0.0,
+
+			"colorField": "pressure",
+			"colorMapType": 1,
+			"renderMaxValue": 50000.0,
+			"renderMinValue": 0.0,
+
+			"viscosityMethod": 1,
+			"viscosity": 1.0,
+
+			"vorticityMethod": 0,
+			"dragMethod": 0,
+			"elasticityMethod": 0,
+			
+			"surfaceTensionMethod": 1,
+			"surfaceTension": 10.0
+		},
+		{
+			"id": "outer",
+			"density0": 1000.0,
+			"xsph": 0.0,
+
+			"colorField": "density",
+			"colorMapType": 3,
+			"renderMaxValue": 50000.0,
+			"renderMinValue": 0.0,
+
+			"viscosityMethod": 1,
+			"viscosity": 1.0,
+
+			"vorticityMethod": 0,
+			"dragMethod": 0,
+			"elasticityMethod": 0,
+			"surfaceTensionMethod": 0
+		}
+	],
+	"FluidBlocks": [
+		{
+			"id": "inner",
+			"denseMode": 2,
+			"start": [0.0, 0.0, 0.0],
+			"end": [0.6, 0.6, 0.6],
+			"translation": [-0.3, -0.3, -0.3],
+			"scale": [1,1,1]
+		},
+		{
+			"id": "outer",
+			"denseMode": 2,
+			"start": [0.0, 0.0, 0.0],
+			"end": [1, 1, 0.2],
+			"translation": [-0.5, -0.5, 0.27],
+			"scale": [1,1,1]
+		},
+		{
+			"id": "outer",
+			"denseMode": 2,
+			"start": [0.0, 0.0, 0.0],
+			"end": [1, 1, 0.2],
+			"translation": [-0.5, -0.5, -0.47],
+			"scale": [1,1,1]
+		},
+		{
+			"id": "outer",
+			"denseMode": 2,
+			"start": [0.0, 0.0, 0.0],
+			"end": [1.0, 0.21, 0.6],
+			"translation": [-0.5,0.29,-0.3],
+			"scale": [1,1,1]
+		},
+		{
+			"id": "outer",
+			"denseMode": 2,
+			"start": [0.0, 0.0, 0.0],
+			"end": [1.0, 0.21, 0.6],
+			"translation": [-0.5,-0.5,-0.3],
+			"scale": [1,1,1]
+		},
+		{
+			"id": "outer",
+			"denseMode": 2,
+			"start": [0.0, 0.0, 0.0],
+			"end": [0.2, 0.6, 0.6],
+			"translation": [-0.5,-0.3,-0.3],
+			"scale": [1,1,1]
+		},
+		{
+			"id": "outer",
+			"denseMode": 2,
+			"start": [0.0, 0.0, 0.0],
+			"end": [0.2, 0.6, 0.6],
+			"translation": [0.3,-0.3,-0.3],
+			"scale": [1,1,1]
+		}
+	]	
+}
