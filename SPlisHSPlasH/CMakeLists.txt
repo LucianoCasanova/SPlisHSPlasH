@@ -195,6 +195,8 @@ add_library(SPlisHSPlasH
 	AnimationField.h
 	AnimationFieldSystem.h
 	AnimationFieldSystem.cpp
+	DynamicParameterSystem.h
+	DynamicParameterSystem.cpp
 	BoundaryModel.cpp
 	BoundaryModel.h
 	BoundaryModel_Akinci2012.cpp
