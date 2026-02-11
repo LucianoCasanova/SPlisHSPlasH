@@ -17,6 +17,11 @@ int FluidBlockParameterObject::FLUID_BLOCK_VISMESH = -1;
 int FluidBlockParameterObject::FLUID_BLOCK_MODE = -1;
 int FluidBlockParameterObject::FLUID_BLOCK_INITIAL_VEL = -1;
 int FluidBlockParameterObject::FLUID_BLOCK_INITIAL_ANGVEL = -1;
+int FluidBlockParameterObject::FLUID_BLOCK_SPLIT = -1;
+int FluidBlockParameterObject::FLUID_BLOCK_SPLIT_CENTER = -1;
+int FluidBlockParameterObject::FLUID_BLOCK_SPLIT_RADIUS = -1;
+int FluidBlockParameterObject::FLUID_BLOCK_SPLIT_INNER_ID = -1;
+int FluidBlockParameterObject::FLUID_BLOCK_SPLIT_OUTER_ID = -1;
 
 void FluidBlockParameterObject::initParameters()
 {
@@ -55,6 +60,26 @@ void FluidBlockParameterObject::initParameters()
 	FLUID_BLOCK_INITIAL_ANGVEL = createVectorParameter("initialAngularVelocity", "Initial angular velocity", 3u, initialAngularVelocity.data());
 	setGroup(FLUID_BLOCK_INITIAL_ANGVEL, "FluidBlock");
 	setDescription(FLUID_BLOCK_INITIAL_ANGVEL, "The initial angular velocity of the block.");
+
+	FLUID_BLOCK_SPLIT = createBoolParameter("split", "Allow spherical split", &split);
+	setGroup(FLUID_BLOCK_SPLIT, "FluidBlock");
+	setDescription(FLUID_BLOCK_SPLIT, "Toggle for spherical split");
+
+	FLUID_BLOCK_SPLIT_CENTER = createVectorParameter("splitCenter", "Split center", 3u, splitCenter.data());
+	setGroup(FLUID_BLOCK_SPLIT_CENTER, "FluidBlock");
+	setDescription(FLUID_BLOCK_SPLIT_CENTER, "Position of the center of the spherical split.");
+
+	FLUID_BLOCK_SPLIT_RADIUS = createNumericParameter<Real>("splitRadius", "Split radius", &splitRadius);
+	setGroup(FLUID_BLOCK_SPLIT_RADIUS, "FluidBlock");
+	setDescription(FLUID_BLOCK_SPLIT_RADIUS, "Radius of the spherical split.");
+
+	FLUID_BLOCK_SPLIT_INNER_ID = createStringParameter("innerId", "Id for sphere", &innerId);
+	setGroup(FLUID_BLOCK_SPLIT_INNER_ID, "FluidBlock");
+	setDescription(FLUID_BLOCK_SPLIT_INNER_ID, "Id for the inner sphere.");
+
+	FLUID_BLOCK_SPLIT_OUTER_ID = createStringParameter("outerId", "Id for shell", &outerId);
+	setGroup(FLUID_BLOCK_SPLIT_OUTER_ID, "FluidBlock");
+	setDescription(FLUID_BLOCK_SPLIT_OUTER_ID, "Id for the outer shell.");
 }
 
 //////////////////////////////////////////////////////////////////////////

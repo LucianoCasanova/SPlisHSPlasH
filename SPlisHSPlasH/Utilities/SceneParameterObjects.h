@@ -20,6 +20,11 @@ namespace Utilities
 		unsigned char mode;
 		Vector3r initialVelocity;
 		Vector3r initialAngularVelocity;
+		bool split;
+		Vector3r splitCenter;
+		Real splitRadius;
+		std::string innerId;
+		std::string outerId;
 
 		FluidBlockParameterObject()
 		{
@@ -33,10 +38,16 @@ namespace Utilities
 			scale = Vector3r::Ones();
 			initialVelocity = Vector3r::Zero();
 			initialAngularVelocity = Vector3r::Zero();
+			split = false;
+			splitCenter = Vector3r::Zero();
+			splitRadius = 1.0;
+			innerId = "sphere";
+			outerId = "shell";
 		}
 
 		FluidBlockParameterObject(std::string id_, std::string visMeshFile_, Vector3r boxMin_, Vector3r boxMax_, unsigned char mode_, Vector3r translation_, Vector3r scale_,
-								Vector3r initialVelocity_, Vector3r initialAngularVelocity_)
+								Vector3r initialVelocity_, Vector3r initialAngularVelocity_, bool split_, Vector3r splitCenter_, Real splitRadius_, std::string innerId_,
+								std::string outerId_)
 		{
 			// Default values
 			id = id_;
@@ -48,6 +59,11 @@ namespace Utilities
 			mode = mode_;
 			initialVelocity = initialVelocity_;
 			initialAngularVelocity = initialAngularVelocity_;
+			split = split_;
+			splitCenter = splitCenter_;
+			splitRadius = splitRadius_;
+			innerId = innerId_;
+			outerId = outerId_;
 		}
 
 		static int FLUID_BLOCK_ID;
@@ -59,6 +75,11 @@ namespace Utilities
 		static int FLUID_BLOCK_MODE;
 		static int FLUID_BLOCK_INITIAL_VEL;
 		static int FLUID_BLOCK_INITIAL_ANGVEL;
+		static int FLUID_BLOCK_SPLIT;
+		static int FLUID_BLOCK_SPLIT_CENTER;
+		static int FLUID_BLOCK_SPLIT_RADIUS;
+		static int FLUID_BLOCK_SPLIT_INNER_ID;
+		static int FLUID_BLOCK_SPLIT_OUTER_ID;
 
 		virtual void initParameters();
 	};

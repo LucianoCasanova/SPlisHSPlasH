@@ -1508,20 +1508,118 @@ void SimulatorBase::createFluidBlocks(std::map<std::string, unsigned int> &fluid
 				}
 			}
 		}
-		setInitialVelocity(scene.fluidBlocks[i]->initialVelocity, scene.fluidBlocks[i]->initialAngularVelocity, numAddedParticles, &fluidParticles[fluidIndex][startIndex], &fluidVelocities[fluidIndex][startIndex]);
+		
+		if (scene.fluidBlocks[i]->split)
+		{
+			// Split the particles before setting velocity
+			splitFluidBlockParticles(fluidIndex, fluidIDs, fluidParticles, fluidVelocities, fluidObjectIds);
 
-		Simulation::FluidInfo info;
-		info.type = 0;
-		info.id = scene.fluidBlocks[i]->id;
-		info.box = AlignedBox3r(minX, maxX);;
-		info.visMeshFile = scene.fluidBlocks[i]->visMeshFile;
-		info.initialVelocity = scene.fluidBlocks[i]->initialVelocity;
-		info.initialAngularVelocity = scene.fluidBlocks[i]->initialAngularVelocity;
-		info.mode = scene.fluidBlocks[i]->mode;
-		info.numParticles = numAddedParticles;
-		Simulation::getCurrent()->addFluidInfo(info);
+			// Set initial velocities
+			unsigned int innerFluidIndex = fluidIDs[scene.fluidBlocks[i]->innerId];
+			unsigned int outerFluidIndex = fluidIDs[scene.fluidBlocks[i]->outerId];
+
+			if (!fluidParticles[innerFluidIndex].empty())
+			{
+				setInitialVelocity(scene.fluidBlocks[i]->initialVelocity, scene.fluidBlocks[i]->initialAngularVelocity, fluidParticles[innerFluidIndex].size(), &fluidParticles[innerFluidIndex][0], &fluidVelocities[innerFluidIndex][0]);
+
+				Simulation::FluidInfo innerInfo;
+				innerInfo.type = 0;
+				innerInfo.id = scene.fluidBlocks[i]->innerId;
+				innerInfo.box = AlignedBox3r(minX, maxX);
+				innerInfo.visMeshFile = scene.fluidBlocks[i]->visMeshFile;
+				innerInfo.initialVelocity = scene.fluidBlocks[i]->initialVelocity;
+				innerInfo.initialAngularVelocity = scene.fluidBlocks[i]->initialAngularVelocity;
+				innerInfo.mode = scene.fluidBlocks[i]->mode;
+				innerInfo.numParticles = fluidParticles[innerFluidIndex].size();
+				Simulation::getCurrent()->addFluidInfo(innerInfo);
+			}
+
+			if (!fluidParticles[outerFluidIndex].empty())
+			{
+				setInitialVelocity(scene.fluidBlocks[i]->initialVelocity, scene.fluidBlocks[i]->initialAngularVelocity, fluidParticles[outerFluidIndex].size(), &fluidParticles[outerFluidIndex][0], &fluidVelocities[outerFluidIndex][0]);
+
+				Simulation::FluidInfo outerInfo;
+				outerInfo.type = 0;
+				outerInfo.id = scene.fluidBlocks[i]->outerId;
+				outerInfo.box = AlignedBox3r(minX, maxX);
+				outerInfo.visMeshFile = scene.fluidBlocks[i]->visMeshFile;
+				outerInfo.initialVelocity = scene.fluidBlocks[i]->initialVelocity;
+				outerInfo.initialAngularVelocity = scene.fluidBlocks[i]->initialAngularVelocity;
+				outerInfo.mode = scene.fluidBlocks[i]->mode;
+				outerInfo.numParticles = fluidParticles[outerFluidIndex].size();
+				Simulation::getCurrent()->addFluidInfo(outerInfo);
+			}
+		}
+		else
+		{
+			setInitialVelocity(scene.fluidBlocks[i]->initialVelocity, scene.fluidBlocks[i]->initialAngularVelocity, numAddedParticles, &fluidParticles[fluidIndex][startIndex], &fluidVelocities[fluidIndex][startIndex]);
+
+			Simulation::FluidInfo info;
+			info.type = 0;
+			info.id = scene.fluidBlocks[i]->id;
+			info.box = AlignedBox3r(minX, maxX);
+			info.visMeshFile = scene.fluidBlocks[i]->visMeshFile;
+			info.initialVelocity = scene.fluidBlocks[i]->initialVelocity;
+			info.initialAngularVelocity = scene.fluidBlocks[i]->initialAngularVelocity;
+			info.mode = scene.fluidBlocks[i]->mode;
+			info.numParticles = numAddedParticles;
+			Simulation::getCurrent()->addFluidInfo(info);
+		}
 
 		m_currentObjectId++;
+	}
+}
+
+void SimulatorBase::splitFluidBlockParticles(unsigned int sourceFluidIndex, std::map<std::string, unsigned int>& fluidIDs, std::vector<std::vector<Vector3r>>& fluidParticles, std::vector<std::vector<Vector3r>>& fluidVelocities, std::vector<std::vector<unsigned int>>& fluidObjectIds)
+{
+	const Utilities::SceneLoader::Scene& scene = SceneConfiguration::getCurrent()->getScene();
+	Utilities::FluidBlockParameterObject* fb = scene.fluidBlocks[sourceFluidIndex];
+
+	// Create new fluid IDs
+	if (fluidIDs.find(fb->innerId) == fluidIDs.end())
+		fluidIDs[fb->innerId] = fluidIDs.size();
+	if (fluidIDs.find(fb->outerId) == fluidIDs.end())
+		fluidIDs[fb->outerId] = fluidIDs.size();
+
+	unsigned int innerFluidIndex = fluidIDs[fb->innerId];
+	unsigned int outerFluidIndex = fluidIDs[fb->outerId];
+
+	// Make vectors large enough
+	fluidParticles.resize(std::max(static_cast<unsigned int>(fluidParticles.size()), std::max(innerFluidIndex + 1, outerFluidIndex + 1)));
+	fluidVelocities.resize(std::max(static_cast<unsigned int>(fluidVelocities.size()), std::max(innerFluidIndex + 1, outerFluidIndex + 1)));
+	fluidObjectIds.resize(std::max(static_cast<unsigned int>(fluidObjectIds.size()), std::max(innerFluidIndex + 1, outerFluidIndex + 1)));
+
+	// Split particles 
+	for (size_t j = 0; j < fluidParticles[sourceFluidIndex].size(); j++)
+	{
+		Vector3r pos = fluidParticles[sourceFluidIndex][j];
+		Real distance = (pos - fb->splitCenter).norm();
+
+		if (distance <= fb->splitRadius)
+		{
+			fluidParticles[innerFluidIndex].push_back(pos);
+			fluidVelocities[innerFluidIndex].push_back(fluidVelocities[sourceFluidIndex][j]);
+			fluidObjectIds[innerFluidIndex].push_back(fluidObjectIds[sourceFluidIndex][j]);
+		}
+		else
+		{
+			fluidParticles[outerFluidIndex].push_back(pos);
+			fluidVelocities[outerFluidIndex].push_back(fluidVelocities[sourceFluidIndex][j]);
+			fluidObjectIds[outerFluidIndex].push_back(fluidObjectIds[sourceFluidIndex][j]);
+		}
+	}
+
+	// Clear original fluid block
+	fluidParticles[sourceFluidIndex].clear();
+	fluidVelocities[sourceFluidIndex].clear();
+	fluidObjectIds[sourceFluidIndex].clear();
+	for (auto it = fluidIDs.begin(); it != fluidIDs.end(); ++it)
+	{
+		if (it->second == sourceFluidIndex)
+		{
+			fluidIDs.erase(it);
+			break;
+		}
 	}
 }
 
